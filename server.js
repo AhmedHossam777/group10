@@ -2,6 +2,15 @@ const express = require("express");
 
 const app = express();
 
+const logger = (req, res, next) => {
+  console.log("hello, from our backend");
+  next();
+};
+
+app.use(logger);
+
+app.use(express.json()); // for parsing json to Js object
+
 const Users = [
   {
     id: 1,
@@ -26,7 +35,7 @@ const Users = [
 ];
 
 // get all users
-app.get("/users", (req, res) => {
+app.get("/users", (req, res, next) => {
   res.status(200).json({
     message: "get all users",
     Users,
@@ -47,6 +56,53 @@ app.get("/users/:id", (req, res) => {
     message: "user fetched successfully",
     user,
   });
+});
+
+// create user
+app.post("/users", (req, res) => {
+  const user = req.body;
+  Users.push(user);
+
+  res.status(201).json({
+    message: "user created successfully",
+    Users,
+  });
+});
+
+// update user
+app.patch("/users/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+
+  const user = Users.find((u) => u.id === id);
+  if (!user) {
+    res.status(404).json({
+      message: "user not found",
+    });
+  }
+
+  const { name, age } = req.body;
+  user.name = name || user.name;
+  user.age = age || user.age;
+
+  res.status(200).json({
+    message: "user updated successfully",
+    user,
+  });
+});
+
+// delete
+app.delete("/users/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+
+  const userIndex = Users.findIndex((u) => u.id === id);
+  if (userIndex === -1) {
+    res.status(404).json({
+      message: "user not found",
+    });
+  }
+
+  const deletedUser = Users.splice(userIndex, 1);
+  res.status(204).json(deletedUser);
 });
 
 // get one user
@@ -81,6 +137,7 @@ app.listen(port, () => {
 // req.params
 // req.query
 // req.headers
+// req.boy
 
 // token -> key -> 30 day
 
