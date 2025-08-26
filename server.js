@@ -1,145 +1,19 @@
 const express = require("express");
 
 const app = express();
+const userRouter = require("./routes/userRoutes");
 
-const logger = (req, res, next) => {
-  console.log("hello, from our backend");
+app.use(express.json());
+
+app.use((req, res, next) => {
+  console.log("hello, from backend");
   next();
-};
-
-app.use(logger);
-
-app.use(express.json()); // for parsing json to Js object
-
-const Users = [
-  {
-    id: 1,
-    name: "ahmed",
-    age: 20,
-  },
-  {
-    id: 2,
-    name: "mohamed",
-    age: 30,
-  },
-  {
-    id: 3,
-    name: "ali",
-    age: 22,
-  },
-  {
-    id: 4,
-    name: "ibrahim",
-    age: 30,
-  },
-];
-
-// get all users
-app.get("/users", (req, res, next) => {
-  res.status(200).json({
-    message: "get all users",
-    Users,
-  });
 });
 
-app.get("/users/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const user = Users.find((user) => user.id === id);
-
-  if (!user) {
-    res.status(404).json({
-      message: "user not found",
-    });
-  }
-
-  res.status(200).json({
-    message: "user fetched successfully",
-    user,
-  });
-});
-
-// create user
-app.post("/users", (req, res) => {
-  const user = req.body;
-  Users.push(user);
-
-  res.status(201).json({
-    message: "user created successfully",
-    Users,
-  });
-});
-
-// update user
-app.patch("/users/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-
-  const user = Users.find((u) => u.id === id);
-  if (!user) {
-    res.status(404).json({
-      message: "user not found",
-    });
-  }
-
-  const { name, age } = req.body;
-  user.name = name || user.name;
-  user.age = age || user.age;
-
-  res.status(200).json({
-    message: "user updated successfully",
-    user,
-  });
-});
-
-// delete
-app.delete("/users/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-
-  const userIndex = Users.findIndex((u) => u.id === id);
-  if (userIndex === -1) {
-    res.status(404).json({
-      message: "user not found",
-    });
-  }
-
-  const deletedUser = Users.splice(userIndex, 1);
-  res.status(204).json(deletedUser);
-});
-
-// get one user
-
-// // read:
-// app.get();
-//
-// // create:
-// app.post();
-//
-// // update:
-// app.patch();
-//
-// // delete:
-// app.delete();
+app.use("/users", userRouter);
 
 const port = 3000;
 
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);
 });
-
-//! Status Code:
-// GET, POST, PATCH, PUT,DELETE
-// status code: HTTP protocol
-// 200 -> success(ok), 201 -> created, 204 => no content (delete)
-// 300 -> redirect
-// 400 -> bad request, 404 -> not found
-// 500 -> server error
-
-//! Request Object content:
-// req.params
-// req.query
-// req.headers
-// req.boy
-
-// token -> key -> 30 day
-
-//! CRUD operations
-// create, read(get), update, delete
