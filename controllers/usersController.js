@@ -1,18 +1,19 @@
 const Users = require("../model/User");
+const { User } = require("../model/User");
 
-const getAllUsers = (req, res) => {
+const getAllUsers = async (req, res) => {
+  const users = await User.find();
   res.status(200).json({
     message: "get all users",
-    Users,
+    users,
   });
 };
 
-const getOneUser = (req, res) => {
+const getOneUser = async (req, res) => {
   console.log(req.params.id);
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
 
-  const user = Users.find((user) => user.id === id);
-
+  const user = await User.findById(id);
   if (!user) {
     res.status(404).json({
       message: "user not found",
@@ -25,15 +26,17 @@ const getOneUser = (req, res) => {
   });
 };
 
-const createUser = (req, res) => {
-  console.log(req.body);
-  const user = req.body;
+const createUser = async (req, res) => {
+  try {
+    const user = await User.create(req.body);
 
-  Users.push(user);
-  res.status(201).json({
-    message: "user created successfully",
-    Users,
-  });
+    res.status(201).json({
+      message: "user created successfully",
+      user,
+    });
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 const updateUser = (req, res) => {
