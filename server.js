@@ -2,6 +2,7 @@ const express = require("express");
 
 const app = express();
 const userRouter = require("./routes/userRoutes");
+const postRouter = require("./routes/postsRoutes");
 const { connectDB } = require("./config/connectDb");
 
 app.use(express.json());
@@ -12,10 +13,11 @@ app.use((req, res, next) => {
 });
 
 app.use("/users", userRouter);
-
-const port = 3000;
+app.use("/posts", postRouter);
 
 connectDB();
+
+const port = 3000;
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);
 });
