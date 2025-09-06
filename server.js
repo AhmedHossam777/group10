@@ -15,6 +15,15 @@ app.use((req, res, next) => {
 app.use("/users", userRouter);
 app.use("/posts", postRouter);
 
+app.use((err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
+  });
+});
+
 connectDB();
 
 const port = 3000;

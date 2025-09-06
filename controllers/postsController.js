@@ -1,6 +1,7 @@
 const { Post } = require("../model/Post");
+const { AppError } = require("../utils/AppError");
 
-const createPost = async (req, res) => {
+const createPost = async (req, res, next) => {
   try {
     const postData = req.body;
 
@@ -30,10 +31,13 @@ const getAllPosts = async (req, res) => {
 };
 
 // http://localhost:3000/posts/:id
-const getOnePost = async (req, res) => {
+const getOnePost = async (req, res, next) => {
   try {
     const id = req.params.id;
     const post = await Post.findById(id);
+    if (!post) {
+      return next(new AppError("post not found", 404));
+    }
 
     res.status(200).json({
       message: "get one post",
@@ -44,13 +48,15 @@ const getOnePost = async (req, res) => {
   }
 };
 
-const updatePost = async (req, res) => {
+const updatePost = async (req, res, next) => {
   try {
     const id = req.params.id;
     const data = req.body;
 
     const updatedPost = await Post.findByIdAndUpdate(id, data, { new: true });
-
+    if (!updatedPost) {
+      return next(new AppError("post not found", 404));
+    }
     res.status(200).json({
       message: "post updated successfully",
       updatedPost,
@@ -60,11 +66,13 @@ const updatePost = async (req, res) => {
   }
 };
 
-const deletePost = async (req, res) => {
+const deletePost = async (req, res, next) => {
   try {
     const id = req.params.id;
     const deletedPost = await Post.findByIdAndDelete(id);
-
+    if (!deletedPost) {
+      return next(new AppError("post not found", 404));
+    }
     res.status(204).json({
       message: "post deleted successfully",
     });
