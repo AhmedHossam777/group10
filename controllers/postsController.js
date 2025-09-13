@@ -1,85 +1,64 @@
 const { Post } = require("../model/Post");
 const { AppError } = require("../utils/AppError");
+const asyncHandler = require("express-async-handler");
 
-const createPost = async (req, res, next) => {
-  try {
-    const postData = req.body;
+const createPost = asyncHandler(async (req, res) => {
+  const postData = req.body;
 
-    const post = await Post.create(postData);
+  const post = await Post.create(postData);
 
-    console.log("created post: ", post);
-    res.status(201).json({
-      message: "post created successfully",
-      post,
-    });
-  } catch (e) {
-    console.log(e);
+  res.status(201).json({
+    message: "post created successfully",
+    post,
+  });
+});
+
+const getAllPosts = asyncHandler(async (req, res) => {
+  const posts = await Post.find();
+
+  res.status(200).json({
+    message: "all posts",
+    posts,
+  });
+});
+
+const getOnePost = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+  const post = await Post.findById(id);
+  if (!post) {
+    throw new AppError("post not found", 404);
   }
-};
 
-const getAllPosts = async (req, res) => {
-  try {
-    const posts = await Post.find();
+  res.status(200).json({
+    message: "get one post",
+    post,
+  });
+});
 
-    res.status(200).json({
-      message: "all posts",
-      posts,
-    });
-  } catch (e) {
-    console.log(e);
+const updatePost = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+  const data = req.body;
+
+  const updatedPost = await Post.findByIdAndUpdate(id, data, { new: true });
+  if (!updatedPost) {
+    throw new AppError("post not found", 404);
   }
-};
+  res.status(200).json({
+    message: "post updated successfully",
+    updatedPost,
+  });
+});
 
-// http://localhost:3000/posts/:id
-const getOnePost = async (req, res, next) => {
-  try {
-    const id = req.params.id;
-    const post = await Post.findById(id);
-    if (!post) {
-      return next(new AppError("post not found", 404));
-    }
-
-    res.status(200).json({
-      message: "get one post",
-      post,
-    });
-  } catch (e) {
-    console.log(e);
+const deletePost = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+  const deletedPost = await Post.findByIdAndDelete(id);
+  if (!deletedPost) {
+    throw new AppError("post not found", 404);
   }
-};
-
-const updatePost = async (req, res, next) => {
-  try {
-    const id = req.params.id;
-    const data = req.body;
-
-    const updatedPost = await Post.findByIdAndUpdate(id, data, { new: true });
-    if (!updatedPost) {
-      return next(new AppError("post not found", 404));
-    }
-    res.status(200).json({
-      message: "post updated successfully",
-      updatedPost,
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-const deletePost = async (req, res, next) => {
-  try {
-    const id = req.params.id;
-    const deletedPost = await Post.findByIdAndDelete(id);
-    if (!deletedPost) {
-      return next(new AppError("post not found", 404));
-    }
-    res.status(204).json({
-      message: "post deleted successfully",
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
+  res.status(204).json({
+    message: "post deleted successfully",
+  });
+});
 
 module.exports = {
   createPost,
