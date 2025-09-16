@@ -24,15 +24,6 @@ const getOneUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-const signup = asyncHandler(async (req, res) => {
-  const user = await User.create(req.body);
-
-  res.status(201).json({
-    message: "user created successfully",
-    user,
-  });
-});
-
 const updateUser = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
   const data = req.body;
@@ -58,29 +49,9 @@ const deleteUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-const login = asyncHandler(async (req, res, next) => {
-  const { email, password } = req.body;
-  const existUser = await User.findOne({ email: email });
-
-  if (!existUser) {
-    throw new AppError("wrong email or password", 401);
-  }
-
-  const isCorrect = await bcrypt.compare(password, existUser.password);
-  if (!isCorrect) {
-    throw new AppError("wrong email or password", 401);
-  }
-
-  res.status(200).json({
-    message: "you logged in successfully",
-  });
-});
-
 module.exports = {
   getAllUsers,
   getOneUser,
   deleteUser,
-  signup,
   updateUser,
-  login,
 };

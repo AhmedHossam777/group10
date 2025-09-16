@@ -1,22 +1,13 @@
-class Parent {
-  constructor() {}
+// const name = "ahmed hossam";
+// const arr = name.split(" ");
+//
+// console.log(arr); ["ahmed", "hossam"]
 
-  logName() {
-    console.log(`my name is ahmed`);
-  }
-}
+const obj = {
+  authorization: "Bearer dsajkhdkasjhdjksahdjksahdjkshdajk",
+  age: 22,
+};
 
-class Child extends Parent {
-  play() {
-    console.log("play d,.sa,dsa.");
-  }
-}
+const token = obj["authorization"].split(" ")[1];
 
-const ahmed = new Parent();
-
-const hossam = new Child();
-
-ahmed.logName();
-
-hossam.logName();
-hossam.play();
+console.log(token);

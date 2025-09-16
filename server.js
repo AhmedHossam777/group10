@@ -3,17 +3,18 @@ const express = require("express");
 const app = express();
 const userRouter = require("./routes/userRoutes");
 const postRouter = require("./routes/postsRoutes");
+const authRouter = require("./routes/authRoutes");
 const { connectDB } = require("./config/connectDb");
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  console.log("hello, from backend");
-  next();
+app.get("/", (req, res) => {
+  res.send("hello, world");
 });
 
 app.use("/users", userRouter);
 app.use("/posts", postRouter);
+app.use("/auth", authRouter);
 
 app.use((err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
