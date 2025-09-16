@@ -1,33 +1,28 @@
-const Users = require("../model/User");
 const { User } = require("../model/User");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const { AppError } = require("../utils/AppError");
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find();
   res.status(200).json({
     message: "get all users",
     users,
   });
-};
+});
 
-const getOneUser = async (req, res) => {
-  console.log(req.params.id);
+const getOneUser = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
-
   const user = await User.findById(id);
   if (!user) {
-    res.status(404).json({
-      message: "user not found",
-    });
+    throw new AppError("user not found", 404);
   }
 
   res.status(200).json({
-    message: "users fetched successfully",
+    message: "user fetched successfully",
     user,
   });
-};
+});
 
 const signup = asyncHandler(async (req, res) => {
   const user = await User.create(req.body);
@@ -38,39 +33,30 @@ const signup = asyncHandler(async (req, res) => {
   });
 });
 
-const updateUser = (req, res) => {
-  const id = parseInt(req.params.id);
+const updateUser = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+  const data = req.body;
 
-  const user = Users.find((u) => u.id === id);
-  if (!user) {
-    res.status(404).json({
-      message: "user not found",
-    });
+  const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
+  if (!updatedUser) {
+    throw new AppError("user not found", 404);
   }
-
-  const { name, age } = req.body;
-  user.name = name || user.name;
-  user.age = age || user.age;
-
   res.status(200).json({
     message: "user updated successfully",
-    user,
+    updatedUser,
   });
-};
+});
 
-const deleteUser = (req, res) => {
-  const id = parseInt(req.params.id);
-
-  const userIndex = Users.findIndex((u) => u.id === id);
-  if (userIndex === -1) {
-    res.status(404).json({
-      message: "user not found",
-    });
+const deleteUser = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+  const deletedUser = await User.findByIdAndDelete(id);
+  if (!deletedUser) {
+    throw new AppError("user not found", 404);
   }
-
-  const deletedUser = Users.splice(userIndex, 1);
-  res.status(204).json(deletedUser);
-};
+  res.status(204).json({
+    message: "user deleted successfully",
+  });
+});
 
 const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
