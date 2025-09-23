@@ -3,11 +3,36 @@
 //
 // console.log(arr); ["ahmed", "hossam"]
 
-const obj = {
-  authorization: "Bearer dsajkhdkasjhdjksahdjksahdjkshdajk",
-  age: 22,
-};
+// const headers = {
+//   authorization: "Bearer dsajkhdkasjhdjksahdjksahdjkshdajk",
+//   age: 22,
+//   name: "dada",
+// };
+//
+// const auth = headers["authorization"].split(" ")[1];
+//
+// console.log(auth);
+//
+// const req = {
+//   network: "dnsamndsa,",
+//   isTrue: true,
+// };
+//
+// req.name = "ahmed";
+//
+// // console.log(req);
+//
+// let payload = { id: "djkashdasjkhdjksahjkdhsadjk" };
+//
+// let user = {};
+//
+// user = payload;
+//
+// console.log(user.id);
 
-const token = obj["authorization"].split(" ")[1];
+let num1 = 10;
+let num2 = 12;
 
-console.log(token);
+num2 = num1;
+
+console.log(num2);

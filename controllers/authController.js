@@ -38,15 +38,7 @@ const login = asyncHandler(async (req, res, next) => {
   });
 });
 
-const verifyToken = asyncHandler(async (req, res, next) => {
-  const token = req.headers["authorization"]?.split(" ")[1];
-
-  const payload = await verify(token);
-  console.log(payload);
-});
-
 module.exports = {
   signup,
   login,
-  verifyToken,
 };

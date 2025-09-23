@@ -11,6 +11,15 @@ const getAllUsers = asyncHandler(async (req, res) => {
   });
 });
 
+const getMyAccount = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const user = await User.findById(userId);
+
+  res.status(200).json({
+    user,
+  });
+});
+
 const getOneUser = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
   const user = await User.findById(id);
@@ -54,4 +63,5 @@ module.exports = {
   getOneUser,
   deleteUser,
   updateUser,
+  getMyAccount,
 };
