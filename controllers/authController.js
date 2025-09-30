@@ -6,6 +6,13 @@ const { generateToken, verify } = require("../utils/token");
 require("dotenv").config();
 
 const signup = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const existedUser = await User.findOne({ email: email });
+
+  if (existedUser) {
+    throw new AppError("user already existed", 400);
+  }
+
   const user = await User.create(req.body);
 
   res.status(201).json({
@@ -19,12 +26,11 @@ const login = asyncHandler(async (req, res, next) => {
 
   const exitedUser = await User.findOne({ email: email });
 
-  console.log(exitedUser);
-
   if (!exitedUser) {
     throw new AppError("wrong email or password", 401);
   }
 
+  //* true or flase
   const isCorrectPassword = await bcrypt.compare(password, exitedUser.password);
   if (!isCorrectPassword) {
     throw new AppError("wrong email or password", 401);

@@ -14,6 +14,7 @@ const auth = asyncHandler(async (req, res, next) => {
   }
 
   req.user = payload;
+
   next();
 });
 
