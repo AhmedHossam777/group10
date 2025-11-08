@@ -3,10 +3,13 @@ const { AppError } = require("../utils/AppError");
 const asyncHandler = require("express-async-handler");
 
 const createPost = asyncHandler(async (req, res) => {
+  // get data from req.body
   const postData = req.body;
 
+  // create post in database
   const post = await Post.create(postData);
 
+  // send response
   res.status(201).json({
     message: "post created successfully",
     post,
@@ -55,9 +58,7 @@ const deletePost = asyncHandler(async (req, res, next) => {
   if (!deletedPost) {
     throw new AppError("post not found", 404);
   }
-  res.status(204).json({
-    message: "post deleted successfully",
-  });
+  res.status(204);
 });
 
 module.exports = {
@@ -67,3 +68,12 @@ module.exports = {
   deletePost,
   updatePost,
 };
+
+// 200 -> ok -> get, patch request
+// 201 -> created -> post request
+// 204 -> no content -> deleted: doesn't display any data or response
+// 300 -> server redirect
+// 400 -> bad request
+// 401 -> unauthorized
+// 404 -> not found
+// 500 -> server error
