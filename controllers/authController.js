@@ -36,7 +36,7 @@ const login = asyncHandler(async (req, res, next) => {
     throw new AppError("wrong email or password", 401);
   }
 
-  const token = await generateToken(exitedUser._id);
+  const token = await generateToken(exitedUser._id, exitedUser.role);
 
   res.status(200).json({
     message: "you logged in successfully",

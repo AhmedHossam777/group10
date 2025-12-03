@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const generateToken = async (userId) => {
-  const payload = { id: userId };
+const generateToken = async (userId, role) => {
+  const payload = { id: userId, role: role };
 
   return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
