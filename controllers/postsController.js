@@ -1,101 +1,110 @@
-const { Post } = require('../model/Post');
-const { AppError } = require('../utils/AppError');
-const asyncHandler = require('express-async-handler');
+const { Post } = require("../model/Post");
+const { AppError } = require("../utils/AppError");
+const asyncHandler = require("express-async-handler");
+const { raw } = require("express");
 
 const createPost = asyncHandler(async (req, res) => {
-	const userId = req.user.id;
-	// let postData = {req.body, user:userId}
-	let postData = { ...req.body, user: userId };
+  const userId = req.user.id;
+  // let postData = {req.body, user:userId}
+  let postData = { ...req.body, user: userId };
 
-	// create post in database
-	const post = await Post.create(postData);
+  // create post in database
+  const post = await Post.create(postData);
 
-	// send response
-	res.status(201).json({
-		message: 'post created successfully',
-		post,
-	});
+  // send response
+  res.status(201).json({
+    message: "post created successfully",
+    post,
+  });
 });
 
 const getAllPosts = asyncHandler(async (req, res) => {
-	const posts = await Post.find().populate('user');
+  const posts = await Post.find().populate("user");
 
-	res.status(200).json({
-		message: 'all posts',
-		posts,
-	});
+  res.status(200).json({
+    message: "all posts",
+    posts,
+  });
 });
 
 const getOnePost = asyncHandler(async (req, res, next) => {
-	const id = req.params.id;
-	const post = await Post.findById(id).populate({
-		path: 'user',
-		select: 'name',
-	});
+  const id = req.params.id;
+  const post = await Post.findById(id).populate({
+    path: "user",
+    select: "name",
+  });
 
-	if (!post) {
-		throw new AppError('post not found', 404);
-	}
+  if (!post) {
+    throw new AppError("post not found", 404);
+  }
 
-	res.status(200).json({
-		message: 'get one post',
-		post,
-	});
+  res.status(200).json({
+    message: "get one post",
+    post,
+  });
 });
 
 const updatePost = asyncHandler(async (req, res, next) => {
-	const id = req.params.id;
-	const data = req.body;
+  const id = req.params.id;
+  const data = req.body;
 
-	const updatedPost = await Post.findByIdAndUpdate(id, data, { new: true });
-	if (!updatedPost) {
-		throw new AppError('post not found', 404);
-	}
-	res.status(200).json({
-		message: 'post updated successfully',
-		updatedPost,
-	});
+  const updatedPost = await Post.findByIdAndUpdate(id, data, { new: true });
+  if (!updatedPost) {
+    throw new AppError("post not found", 404);
+  }
+  res.status(200).json({
+    message: "post updated successfully",
+    updatedPost,
+  });
 });
 
 const deletePost = asyncHandler(async (req, res, next) => {
-	const id = req.params.id;
-	const deletedPost = await Post.findByIdAndDelete(id);
-	if (!deletedPost) {
-		throw new AppError('post not found', 404);
-	}
-	res.status(204);
+  const id = req.params.id;
+  const deletedPost = await Post.findByIdAndDelete(id);
+  if (!deletedPost) {
+    throw new AppError("post not found", 404);
+  }
+  res.status(204);
 });
 
 const likePost = asyncHandler(async (req, res, next) => {
-	const id = req.params.id;
-	const userId = req.user.id;
+  const postId = req.params.id;
+  const userId = req.user.id;
 
-	const post = await Post.findById(id);
-	if (!post) {
-		throw new AppError('post not found', 404);
-	}
+  const post = await Post.findById(postId);
+  if (!post) {
+    throw new AppError("post not found", 404);
+  }
 
-	const existedUser = post.likes.find((id) => id == userId);
-	if (existedUser) {
-		throw new AppError('you already liked this post', 400);
-	}
+  const existedUser = post.likes.find((id) => id == userId);
 
-	post.likes.push(userId);
+  if (existedUser) {
+    throw new AppError("you already liked this post", 400);
+  }
 
-	await post.save();
+  post.likes.push(userId);
 
-	res.status(200).json({
-		message: 'you like post sucessfullt',
-	});
+  await post.save();
+
+  res.status(200).json({
+    message: "you like post sucessfullt",
+  });
+});
+
+const bulkDelete = asyncHandler(async (req, res, next) => {
+  await Post.deleteMany({});
+
+  res.status(204);
 });
 
 module.exports = {
-	createPost,
-	getOnePost,
-	getAllPosts,
-	deletePost,
-	updatePost,
-	likePost,
+  createPost,
+  getOnePost,
+  getAllPosts,
+  deletePost,
+  updatePost,
+  likePost,
+  bulkDelete,
 };
 
 // 200 -> ok -> get, patch request
