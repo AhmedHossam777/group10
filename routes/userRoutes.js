@@ -13,7 +13,12 @@ const { isAdmin } = require("../middlewares/isAdmin");
 const userRouter = express.Router();
 
 userRouter.route("/").get(auth, isAdmin, getAllUsers);
-userRouter.route("/:id").get(getOneUser).patch(updateUser).delete(deleteUser);
+
+userRouter
+  .route("/:id")
+  .get(getOneUser)
+  .patch(auth, updateUser)
+  .delete(auth, deleteUser);
 
 userRouter.route("/my/account").get(auth, getMyAccount);
 
